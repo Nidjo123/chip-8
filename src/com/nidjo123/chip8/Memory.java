@@ -41,4 +41,8 @@ public class Memory {
         assert memory.length - startAddress >= bytes.length;
         System.arraycopy(bytes, 0, memory, startAddress, bytes.length);
     }
+
+    public byte getByte(int address) {
+        return memory[address];
+    }
 }
