@@ -12,10 +12,32 @@ public class Instructions {
                     return new JumpInstr(word);
                 case 0x2:
                     return new CallInstr(word);
+                case 0x3:
+                    return new SkipVXImmEqInstr(word);
+                case 0x4:
+                    return new SkipVXImmNotEqInstr(word);
+                case 0x5:
+                    return new SkipVXVYEq(word);
                 case 0x6:
                     return new SetVXInstr(word);
                 case 0x7:
                     return new AddVXInstr(word);
+                case 0x8:
+                    int lastNibble = word & 0xF;
+                    switch (lastNibble) {
+                        case 0x0:
+                            return new SetVXVYInstr(word);
+                        case 0x1:
+                            return new BinaryOrInstr(word);
+                        case 0x2:
+                            return new BinaryAndInstr(word);
+                        case 0x3:
+                            return new BinaryXorInstr(word);
+                        case 0x4:
+                            return new AddVXVYInstr(word);
+                    }
+                case 0x9:
+                    return new SkipVXVYNotEq(word);
                 case 0xA:
                     return new SetIndexInstr(word);
                 case 0xC:
@@ -24,6 +46,6 @@ public class Instructions {
                     return new DrawInstr(word);
             }
         }
-        throw new RuntimeException("Unknown instruction code: " + word);
+        throw new InvalidInstruction("Unknown instruction code: " + Integer.toHexString(Short.toUnsignedInt(word)));
     }
 }

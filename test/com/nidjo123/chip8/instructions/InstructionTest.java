@@ -27,4 +27,10 @@ class InstructionTest {
         assertEquals(0x34, instruction.immediate8);
         assertEquals(0x234, instruction.immediate12);
     }
+
+    @Test
+    public void testMalformedInstructions() {
+        assertThrowsExactly(InvalidInstruction.class, () -> new SkipVXVYEq((short) 0x5001), "Unexpected last byte: 0x1");
+        assertThrowsExactly(InvalidInstruction.class, () -> new SkipVXVYNotEq((short) 0x9001), "Unexpected last byte: 0x1");
+    }
 }
