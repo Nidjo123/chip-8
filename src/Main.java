@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
@@ -21,16 +22,46 @@ public class Main implements Runnable {
     private BufferedImage bufferedImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
     private int[] pixels;
     private Chip8 chip8 = new Chip8(WIDTH, HEIGHT);
+    private Path romPath;
 
-    public Main() {
+    public Main(Path romPath) {
+        this.romPath = romPath;
         pixels = ((DataBufferInt) bufferedImage.getRaster().getDataBuffer()).getData();
     }
 
     public static void main(String[] args) {
+        Path romPath = null;
+        if (args.length == 0) {
+            romPath = getSelectedROM();
+            if (romPath == null) {
+                System.exit(1);
+            }
+        } else {
+            try {
+                romPath = Paths.get(args[0]);
+            } catch (InvalidPathException e) {
+                System.err.println("Invalid path: " + args[0] + "(" + e.getMessage() + ")");
+                System.exit(1);
+            }
+        }
+        startChip8(romPath);
+    }
+
+    private static Path getSelectedROM() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        int returnState = fileChooser.showDialog(null, "Load CHIP-8 ROM");
+        if (returnState == JFileChooser.APPROVE_OPTION) {
+            return fileChooser.getSelectedFile().toPath();
+        }
+        return null;
+    }
+
+    private static void startChip8(Path romPath) {
         JFrame frame = new JFrame("CHIP-8");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        Main main = new Main();
+        Main main = new Main(romPath);
         Dimension dimension = new Dimension(WIDTH * SCALE, HEIGHT * SCALE);
         main.canvas.setMinimumSize(dimension);
         main.canvas.setPreferredSize(dimension);
@@ -71,10 +102,9 @@ public class Main implements Runnable {
     @Override
     public void run() {
         try {
-            Path romPath = Paths.get(Objects.requireNonNull(Main.class.getResource("IBM Logo.ch8")).toURI());
-            Rom rom = Rom.from_file(romPath);
+            Rom rom = Rom.from_file(this.romPath);
             this.chip8.loadRom(rom);
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
