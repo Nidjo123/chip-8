@@ -35,12 +35,22 @@ public class Instructions {
                             return new BinaryXorInstr(word);
                         case 0x4:
                             return new AddVXVYInstr(word);
+                        case 0x5:
+                            return new SubVXVYInstr(word);
+                        case 0x6:
+                            return new ShrVXInstr(word);
+                        case 0x7:
+                            return new SubVYVXInstr(word);
+                        case 0xE:
+                            return new ShlVXInstr(word);
                     }
                     throw new InvalidInstruction("Invalid last nibble: " + Integer.toHexString(lastNibble));
                 case 0x9:
                     return new SkipVXVYNotEq(word);
                 case 0xA:
                     return new SetIndexInstr(word);
+                case 0xB:
+                    return new JumpOffsetInstr(word);
                 case 0xC:
                     return new RandomInstr(word);
                 case 0xD:

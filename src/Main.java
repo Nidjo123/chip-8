@@ -111,7 +111,7 @@ public class Main implements Runnable {
         Ticker timerTicker = new Ticker(60);
         timerTicker.addCallback(chip8::tickTimers);
 
-        Ticker logicTicker = new Ticker(4);
+        Ticker logicTicker = new Ticker(700);
         logicTicker.addCallback(chip8::tick);
 
         while (true) {
