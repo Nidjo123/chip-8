@@ -36,6 +36,7 @@ public class Instructions {
                         case 0x4:
                             return new AddVXVYInstr(word);
                     }
+                    throw new InvalidInstruction("Invalid last nibble: " + Integer.toHexString(lastNibble));
                 case 0x9:
                     return new SkipVXVYNotEq(word);
                 case 0xA:
