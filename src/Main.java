@@ -114,9 +114,16 @@ public class Main implements Runnable {
         Ticker logicTicker = new Ticker(700);
         logicTicker.addCallback(chip8::tick);
 
+        Ticker countDisplayTicker = new Ticker(1);
+        countDisplayTicker.addCallback(() -> {
+            System.out.println("Logic ticks: " + logicTicker.getTickCount());
+            logicTicker.resetTickCount();
+        });
+
         while (true) {
             timerTicker.update();
             logicTicker.update();
+            countDisplayTicker.update();
 
             render();
 

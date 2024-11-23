@@ -10,6 +10,7 @@ public class Ticker {
         void onTick();
     }
 
+    private long tickCount;
     private final Duration durationBetweenTicks;
     private Instant lastInstant;
     private List<OnTick> callbacks = new ArrayList<>();
@@ -22,16 +23,28 @@ public class Ticker {
     public void update() {
         Instant now = Instant.now();
         Duration sinceLastTick = Duration.between(lastInstant, now);
-        while (sinceLastTick.dividedBy(durationBetweenTicks) >= 1) {
-            sinceLastTick = sinceLastTick.minus(durationBetweenTicks);
+        long ticks = sinceLastTick.dividedBy(durationBetweenTicks);
+        if (ticks > 0) {
+            Duration leftover = sinceLastTick.minus(durationBetweenTicks.multipliedBy(ticks));
+            lastInstant = now.minus(leftover);
+        }
+        for (long i = 0; i < ticks; i++) {
             for (OnTick callback : callbacks) {
                 callback.onTick();
             }
-            lastInstant = now;
         }
+        tickCount += ticks;
     }
 
     public void addCallback(OnTick callback) {
         callbacks.add(callback);
+    }
+
+    public long getTickCount() {
+        return tickCount;
+    }
+
+    public void resetTickCount() {
+        this.tickCount = 0;
     }
 }
