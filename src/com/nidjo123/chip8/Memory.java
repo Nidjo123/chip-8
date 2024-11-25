@@ -45,4 +45,8 @@ public class Memory {
     public byte getByte(int address) {
         return memory[address];
     }
+
+    public int getFontCharacterAddress(byte hexChar) {
+        return FONT_ADDRESS + (hexChar * FONT.length / 16);
+    }
 }

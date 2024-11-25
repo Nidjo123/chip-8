@@ -55,6 +55,20 @@ public class Instructions {
                     return new RandomInstr(word);
                 case 0xD:
                     return new DrawInstr(word);
+                case 0xF:
+                    int immediate8 = word & 0xFF;
+                    return switch (immediate8) {
+                        case 0x07 -> new DelayToVXInstr(word);
+                        case 0x15 -> new VXToDelayTimerInstr(word);
+                        case 0x18 -> new VXToSoundTimerInstr(word);
+                        case 0x1E -> new AddVXToIInstr(word);
+                        case 0x29 -> new SetIToFontCharInstr(word);
+                        case 0x33 -> new DecimalDigitsInstr(word);
+                        case 0x55 -> new StoreRegistersInstr(word);
+                        case 0x65 -> new LoadRegistersInstr(word);
+                        default ->
+                                throw new InvalidInstruction("Invalid last byte: " + Integer.toHexString(immediate8));
+                    };
             }
         }
         throw new InvalidInstruction("Unknown instruction code: " + Integer.toHexString(Short.toUnsignedInt(word)));
